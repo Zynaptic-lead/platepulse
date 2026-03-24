@@ -4,8 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './modules/auth/auth.module';
 import { HealthModule } from './modules/health/health.module';
+import { RestaurantsModule } from './modules/restaurants/restaurants.module';
 import configuration from './config/configuration';
 import { User } from './modules/users/entities/user.entity';
+import { Restaurant } from './modules/restaurants/entities/restaurant.entity';
+import { MenuItem } from './modules/restaurants/entities/menu-item.entity';
 
 @Module({
   imports: [
@@ -32,7 +35,7 @@ import { User } from './modules/users/entities/user.entity';
         return {
           type: 'postgres',
           url: connectionUrl,
-          entities: [User],
+          entities: [User, Restaurant, MenuItem], // Add all entities here
           synchronize: true, // Force create tables
           logging: true, // Enable logging to see what's happening
           ssl: {
@@ -63,6 +66,7 @@ import { User } from './modules/users/entities/user.entity';
     }),
     AuthModule,
     HealthModule,
+    RestaurantsModule,
   ],
 })
 export class AppModule {}

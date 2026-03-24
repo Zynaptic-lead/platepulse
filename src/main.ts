@@ -61,7 +61,7 @@ async function bootstrap() {
   setupSwagger(app, configService);
 
   // Start server
-  const port = configService.get<number>('app.port') || 3000;
+  const port = configService.get<number>('app.port') || 8000;
   await app.listen(port);
   
   logger.log(`🚀 Application is running on: http://localhost:${port}`);

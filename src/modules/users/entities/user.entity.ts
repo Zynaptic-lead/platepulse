@@ -8,9 +8,11 @@ import {
   BeforeInsert,
   BeforeUpdate,
   Index,
+  OneToMany,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
+import { Restaurant } from '../../restaurants/entities/restaurant.entity';
 
 export enum UserRole {
   CUSTOMER = 'customer',
@@ -59,6 +61,9 @@ export class User {
 
   @Column({ nullable: true })
   refreshToken: string;
+
+  @OneToMany(() => Restaurant, restaurant => restaurant.owner)
+restaurants: Restaurant[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
