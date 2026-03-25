@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 import { HealthModule } from './modules/health/health.module';
 import { RestaurantsModule } from './modules/restaurants/restaurants.module';
 import { OrdersModule } from './modules/orders/orders.module';
@@ -10,7 +11,7 @@ import { DriversModule } from './modules/drivers/drivers.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { StreamsModule } from './modules/streams/streams.module';
-import { UsersModule } from './modules/users/users.module';
+import { MapsModule } from './modules/maps/maps.module';
 import configuration from './config/configuration';
 import { User } from './modules/users/entities/user.entity';
 import { Restaurant } from './modules/restaurants/entities/restaurant.entity';
@@ -73,6 +74,7 @@ import { Stream } from './modules/streams/entities/stream.entity';
       inject: [ConfigService],
     }),
     AuthModule,
+    UsersModule,
     HealthModule,
     RestaurantsModule,
     OrdersModule,
@@ -80,7 +82,7 @@ import { Stream } from './modules/streams/entities/stream.entity';
     ReviewsModule,
     PaymentsModule,
     StreamsModule,
-    UsersModule,
+    MapsModule,
   ],
 })
 export class AppModule {}
