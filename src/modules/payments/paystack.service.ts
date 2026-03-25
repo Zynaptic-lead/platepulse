@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { Payment, PaymentStatus, PaymentMethod } from './entities/payment.entity';
-import { Order, OrderStatus, PaymentStatus as OrderPaymentStatus } from '../../modules/orders/entities/order.entity';
-import { User } from '../../modules/users/entities/user.entity';
+import { Order, OrderStatus, PaymentStatus as OrderPaymentStatus } from '../orders/entities/order.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class PaystackService {
@@ -18,7 +18,7 @@ export class PaystackService {
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private userRepository: Repository<User>, // Add this
     private configService: ConfigService,
   ) {
     this.secretKey = this.configService.get('PAYSTACK_SECRET_KEY') || '';
@@ -57,7 +57,7 @@ export class PaystackService {
         `${this.baseUrl}/transaction/initialize`,
         {
           email: customer.email,
-          amount: Math.round(Number(order.total) * 100), // Convert to kobo
+          amount: Math.round(Number(order.total) * 100),
           reference: `PLATE-${order.orderNumber}-${Date.now()}`,
           callback_url: this.configService.get('PAYSTACK_CALLBACK_URL'),
           metadata: {
@@ -119,7 +119,6 @@ export class PaystackService {
       const { data } = response.data;
 
       if (data.status === 'success') {
-        // Find payment record
         const payment = await this.paymentRepository.findOne({
           where: { paystackReference: reference },
         });
@@ -130,7 +129,6 @@ export class PaystackService {
           payment.paidAt = new Date();
           await this.paymentRepository.save(payment);
 
-          // Update order
           await this.orderRepository.update(payment.orderId, {
             paymentStatus: OrderPaymentStatus.PAID,
             status: OrderStatus.CONFIRMED,
@@ -208,7 +206,6 @@ export class PaystackService {
         payment.refundedAt = new Date();
         await this.paymentRepository.save(payment);
 
-        // Update order
         await this.orderRepository.update(payment.orderId, {
           paymentStatus: OrderPaymentStatus.REFUNDED,
           status: OrderStatus.CANCELLED,
