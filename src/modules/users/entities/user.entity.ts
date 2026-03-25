@@ -65,6 +65,13 @@ export class User {
   @OneToMany(() => Restaurant, restaurant => restaurant.owner)
 restaurants: Restaurant[];
 
+// Add these fields
+@Column({ nullable: true })
+resetPasswordToken: string;
+
+@Column({ nullable: true })
+resetPasswordExpires: Date;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 

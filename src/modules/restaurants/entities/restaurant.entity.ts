@@ -105,6 +105,7 @@ export class Restaurant {
 
   @OneToMany(() => MenuItem, menuItem => menuItem.restaurant)
   menuItems: MenuItem[];
+  
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

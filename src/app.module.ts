@@ -5,13 +5,22 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './modules/auth/auth.module';
 import { HealthModule } from './modules/health/health.module';
 import { RestaurantsModule } from './modules/restaurants/restaurants.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { DriversModule } from './modules/drivers/drivers.module';
+import { ReviewsModule } from './modules/reviews/reviews.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { StreamsModule } from './modules/streams/streams.module';
+import { UsersModule } from './modules/users/users.module';
 import configuration from './config/configuration';
 import { User } from './modules/users/entities/user.entity';
 import { Restaurant } from './modules/restaurants/entities/restaurant.entity';
 import { MenuItem } from './modules/restaurants/entities/menu-item.entity';
-import { OrdersModule } from './modules/orders/orders.module';
 import { Order } from './modules/orders/entities/order.entity';
 import { OrderItem } from './modules/orders/entities/order-item.entity';
+import { Driver } from './modules/drivers/entities/driver.entity';
+import { Review } from './modules/reviews/entities/review.entity';
+import { Payment } from './modules/payments/entities/payment.entity';
+import { Stream } from './modules/streams/entities/stream.entity';
 
 @Module({
   imports: [
@@ -29,24 +38,20 @@ import { OrderItem } from './modules/orders/entities/order-item.entity';
           throw new Error('DATABASE_URL is not defined in environment variables');
         }
 
-        // Fix SSL mode warning and connection issues
-        let connectionUrl = databaseUrl;
-        if (connectionUrl.includes('sslmode=require')) {
-          connectionUrl = connectionUrl.replace('sslmode=require', 'sslmode=verify-full');
-        }
+        const isProduction = configService.get('app.env') === 'production';
 
         return {
           type: 'postgres',
-          url: connectionUrl,
-          entities: [User, Restaurant, MenuItem, Order, OrderItem], // Add all entities here
-          synchronize: true, // Force create tables
-          logging: true, // Enable logging to see what's happening
-          ssl: {
-            rejectUnauthorized: false, // Important for Neon
-          },
+          url: databaseUrl,
+          entities: [User, Restaurant, MenuItem, Order, OrderItem, Driver, Review, Payment, Stream],
+          synchronize: !isProduction,
+          logging: !isProduction,
+          ssl: isProduction ? {
+            rejectUnauthorized: false,
+          } : false,
           extra: {
-            max: 10,
-            connectionTimeoutMillis: 10000, // Increase timeout
+            max: 20,
+            connectionTimeoutMillis: 10000,
             idleTimeoutMillis: 30000,
           },
           retryAttempts: 3,
@@ -71,6 +76,11 @@ import { OrderItem } from './modules/orders/entities/order-item.entity';
     HealthModule,
     RestaurantsModule,
     OrdersModule,
+    DriversModule,
+    ReviewsModule,
+    PaymentsModule,
+    StreamsModule,
+    UsersModule,
   ],
 })
 export class AppModule {}

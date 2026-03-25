@@ -3,6 +3,7 @@ import { ValidationPipe, BadRequestException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import compression from 'compression';
+import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
 import { setupSwagger } from './config/swagger.config';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -10,12 +11,22 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  const app = await NestFactory.create(AppModule);
+  
+  // Create app with raw body for Stripe webhooks
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true,
+  });
+  
   const configService = app.get(ConfigService);
 
   // Security middleware
   app.use(helmet());
   app.use(compression());
+
+  // Configure body parsers
+  // JSON parser with increased limit
+  app.use(json({ limit: '10mb' }));
+  app.use(urlencoded({ extended: true, limit: '10mb' }));
 
   // Global prefix
   app.setGlobalPrefix('api');
@@ -67,5 +78,6 @@ async function bootstrap() {
   logger.log(`🚀 Application is running on: http://localhost:${port}`);
   logger.log(`📚 Swagger documentation: http://localhost:${port}/api/docs`);
   logger.log(`🌍 Environment: ${configService.get('app.env')}`);
+  logger.log(`💳 Stripe webhook endpoint: http://localhost:${port}/api/payments/webhook`);
 }
 bootstrap();
