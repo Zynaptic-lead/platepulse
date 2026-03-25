@@ -9,6 +9,9 @@ import configuration from './config/configuration';
 import { User } from './modules/users/entities/user.entity';
 import { Restaurant } from './modules/restaurants/entities/restaurant.entity';
 import { MenuItem } from './modules/restaurants/entities/menu-item.entity';
+import { OrdersModule } from './modules/orders/orders.module';
+import { Order } from './modules/orders/entities/order.entity';
+import { OrderItem } from './modules/orders/entities/order-item.entity';
 
 @Module({
   imports: [
@@ -35,7 +38,7 @@ import { MenuItem } from './modules/restaurants/entities/menu-item.entity';
         return {
           type: 'postgres',
           url: connectionUrl,
-          entities: [User, Restaurant, MenuItem], // Add all entities here
+          entities: [User, Restaurant, MenuItem, Order, OrderItem], // Add all entities here
           synchronize: true, // Force create tables
           logging: true, // Enable logging to see what's happening
           ssl: {
@@ -67,6 +70,7 @@ import { MenuItem } from './modules/restaurants/entities/menu-item.entity';
     AuthModule,
     HealthModule,
     RestaurantsModule,
+    OrdersModule,
   ],
 })
 export class AppModule {}
